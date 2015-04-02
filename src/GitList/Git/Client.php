@@ -8,12 +8,14 @@ class Client extends BaseClient
 {
     protected $defaultBranch;
     protected $hidden;
+    protected $projects;
 
     public function __construct($options = null)
     {
         parent::__construct($options['path']);
         $this->setDefaultBranch($options['default_branch']);
         $this->setHidden($options['hidden']);
+        $this->setProjects($options['projects']);
     }
 
     public function getRepositoryFromName($paths, $repo)
@@ -99,6 +101,10 @@ class Client extends BaseClient
                         $repoName = $file->getFilename();
                     }
 
+                    if (is_array($this->getProjects()) && !in_array($repoName, $this->getProjects())) {
+                        continue;
+                    }
+
                     $repositories[$repoName] = array(
                         'name' => $repoName,
                         'path' => $file->getPathname(),
@@ -153,6 +159,28 @@ class Client extends BaseClient
     protected function setHidden($hidden)
     {
         $this->hidden = $hidden;
+
+        return $this;
+    }
+
+    /**
+     * Get project list
+     *
+     * @return array List of repositories to show
+     */
+    protected function getProjects()
+    {
+        return $this->projects;
+    }
+
+    /**
+     * Set the shown repository list
+     *
+     * @param array $projects List of repositories to show
+     */
+    protected function setProjects($projects)
+    {
+        $this->projects = $projects;
 
         return $this;
     }
